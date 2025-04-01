@@ -2,6 +2,7 @@ import axios from "axios";
 
 const API_KEY = "wx7y41kkw0y8og8js";
 const BASE_URL = "https://techhk.aoscdn.com/";
+const MAXIMUM_RETRIES = 20;
 
 const enhancedImageAPI = async (file) => {
   try {
@@ -11,32 +12,47 @@ const enhancedImageAPI = async (file) => {
     const enhancedImageData = await PollForEnhancedImage(taskId);
     console.log("Enhanced Image Data", enhancedImageData);
 
-    // return enhancedImageData
+    return enhancedImageData;
   } catch (error) {
     console.log("Error enhancing image:", error.message);
   }
 };
 
 const uploadImage = async (file) => {
-  const formData = new FormData();
-  formData.append("image_file", file);
-
-  const { data } = await axios.post(
-    `${BASE_URL}/api/tasks/visual/scale`,
-    formData,
-    {
+    const formData = new FormData();
+    formData.append("image_file", file);
+  
+    const response = await axios.post(`${BASE_URL}/api/tasks/visual/scale`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
         "X-API-KEY": API_KEY,
       },
+    });
+  
+    if (!response?.data?.data?.task_id) {
+      throw new Error("Failed to Upload Image! Task ID Not Found");
     }
-  );
+  
+    return response.data.data.task_id; // ✅ Corrected
+  };
+  
+const PollForEnhancedImage = async (taskId, retries = 0) => {
+  const result = await fetchEnhancedImage(taskId);
 
-  if (!data?.data?.task_id) {
-    throw new Error("Failed To Upload Image! Task If Not Found");
+  if (result.state === 4) {
+    console.log(`Processing...${retries}/${MAXIMUM_RETRIES}`);
+
+    if (retries >= MAXIMUM_RETRIES) {
+      throw new Error("Max retries reached. please try again later");
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    return PollForEnhancedImage(taskId, retries + 1);
   }
 
-  return data.data.task_id;
+  console.log("Enhanced Image URL : ", result);
+  return result;
 };
 
 const fetchEnhancedImage = async (task_id) => {
@@ -58,25 +74,6 @@ const fetchEnhancedImage = async (task_id) => {
   return data.data;
 
   // /api/tasks/visual/scale/{task_id} ----get
-};
-
-const PollForEnhancedImage = async (taskId, retries = 0) => {
-  const result = await fetchEnhancedImage(taskId);
-
-  if (result.state === 4) {
-    console.log("Processing...");
-
-    if (retries >= 20) {
-      throw new Error("Max retries reached. please try again later");
-    }
-
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    return PollForEnhancedImage(taskId, retries + 1);
-  }
-
-  console.log("Enhanced Image URL : ", result);
-  return result;
 };
 
 export { enhancedImageAPI };

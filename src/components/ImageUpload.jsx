@@ -9,7 +9,8 @@ function ImageUpload(props) {
 
 
   return (
-    <div className="bg-white shadow-lg rounded-2xl p-6 w-[60vh] m-auto max-w-2xl:">
+    <div className="bg-white shadow-lg rounded-2xl p-6 w-[60vh] m-auto max-w-2xl">
+
       <label
         htmlFor="fileInput"
         className="block w-full cursor-pointer border-2 border-dashed border-gray-300 rounded-lg p-6  text-center hover:border-blue-500 transition-all"
