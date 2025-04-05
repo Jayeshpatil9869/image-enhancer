@@ -135,12 +135,4 @@ MIT License
 
 ---
 
-## 📬 Contact
-
-**Made by JayCode** 🚀  
-🔗 GitHub: [your-profile-link]  
-📧 Email: [your-email]
-
----
-
 Let me know if you want me to host the screenshot or the demo gif for you or create a proper deployment badge for the top of the README.
