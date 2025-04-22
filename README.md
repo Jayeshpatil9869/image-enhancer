@@ -1,7 +1,3 @@
-Your README and app screenshot look great already, Jay! Here's a refined version of your README.md to make it even more polished and professional:
-
----
-
 # 🚀 AI Image Enhancer  
 **Enhance and upscale your images with AI in just seconds!**
 
